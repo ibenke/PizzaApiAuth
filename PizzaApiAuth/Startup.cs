@@ -56,6 +56,14 @@ namespace PizzaApiAuth
                 };
             });
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder => builder.WithOrigins("http://localhost:5173")
+                                        .AllowAnyHeader()
+                                        .AllowAnyMethod());
+            });
+
             services.AddControllers();
         }
 
@@ -79,6 +87,8 @@ namespace PizzaApiAuth
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.UseCors("AllowSpecificOrigin");
 
             app.UseEndpoints(endpoints =>
             {

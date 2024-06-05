@@ -10,7 +10,7 @@ using PizzaApiAuth.Models;
 namespace PizzaApiAuth.Migrations
 {
     [DbContext(typeof(Pizza_DbContext))]
-    [Migration("20240605123358_InitialCreate")]
+    [Migration("20240605165605_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
