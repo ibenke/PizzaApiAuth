@@ -221,12 +221,30 @@ namespace PizzaApiAuth.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("PizzaApiAuth.Models.Chef", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Chefs");
+                });
+
             modelBuilder.Entity("PizzaApiAuth.Models.Pizza", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ChefId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -236,7 +254,30 @@ namespace PizzaApiAuth.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ChefId");
+
                     b.ToTable("Pizzas");
+                });
+
+            modelBuilder.Entity("PizzaApiAuth.Models.UserProject", b =>
+                {
+                    b.Property<int>("UserProjectID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ProjectName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserProjectID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("UserProjects");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -286,6 +327,24 @@ namespace PizzaApiAuth.Migrations
                     b.HasOne("PizzaApiAuth.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PizzaApiAuth.Models.Pizza", b =>
+                {
+                    b.HasOne("PizzaApiAuth.Models.Chef", "Chef")
+                        .WithMany("Pizzas")
+                        .HasForeignKey("ChefId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PizzaApiAuth.Models.UserProject", b =>
+                {
+                    b.HasOne("PizzaApiAuth.Models.ApplicationUser", "User")
+                        .WithMany("UserProjects")
+                        .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

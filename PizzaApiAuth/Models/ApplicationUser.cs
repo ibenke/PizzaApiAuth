@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace PizzaApiAuth.Models
 {
@@ -7,5 +9,7 @@ namespace PizzaApiAuth.Models
         //dodatna svojstva koja idu u tablicu sa predefiniranim
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        public virtual ICollection<UserProject> UserProjects { get; set; }
     }
 }

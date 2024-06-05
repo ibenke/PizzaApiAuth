@@ -16,16 +16,19 @@ namespace PizzaApiAuth.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _configuration;
 
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
+            _roleManager = roleManager;
         }
 
+        /*
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
@@ -38,7 +41,36 @@ namespace PizzaApiAuth.Controllers
             }
             return BadRequest(result.Errors);
         }
+        */
 
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterModel model)
+        {
+            var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (result.Succeeded)
+            {
+                if (await _roleManager.RoleExistsAsync(model.Role))
+                {
+                    await _userManager.AddToRoleAsync(user, model.Role);
+                    return Ok(new { message = "User registered successfully and role assigned" });
+                }
+                /*
+                if (!await _roleManager.RoleExistsAsync(model.Role))
+                    await _roleManager.CreateAsync(new IdentityRole(model.Role));
+
+                if (await _roleManager.RoleExistsAsync(model.Role))
+                {
+                    await _userManager.AddToRoleAsync(user, model.Role);
+                }
+
+                return Ok(new { message = "User registered successfully" });
+                */
+            }
+
+            return BadRequest(result.Errors);
+        }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {

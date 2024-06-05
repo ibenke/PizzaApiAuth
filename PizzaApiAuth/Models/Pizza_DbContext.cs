@@ -10,6 +10,8 @@ namespace PizzaApiAuth.Models
 
         }
         public Pizza_DbContext(DbContextOptions<Pizza_DbContext> options) : base(options) { }
-        public DbSet<Pizza> Pizzas { get; set; }
+        public DbSet<Pizza> Pizzas { get; set; } = null!;
+        public DbSet<Chef> Chefs { get; set; } = null!;
+        public DbSet<UserProject> UserProjects { get; set; } = null!;
     }
 }

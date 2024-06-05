@@ -26,7 +26,16 @@ namespace PizzaApiAuth.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Pizza>>> GetEmployees()
         {
-            return await pizza_DbContext.Pizzas.ToListAsync();
+            //return await pizza_DbContext.Pizzas.ToListAsync();
+            var pizzas = await pizza_DbContext.Pizzas.Select(p => new
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                ChefName = p.Chef.Name
+            }).ToListAsync();
+
+            return Ok(pizzas);
         }
     }
 }
