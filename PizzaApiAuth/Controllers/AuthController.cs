@@ -8,6 +8,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PizzaApiAuth.Controllers
 {
@@ -56,7 +58,7 @@ namespace PizzaApiAuth.Controllers
                     await _userManager.AddToRoleAsync(user, model.Role);
                     return Ok(new { message = "User registered successfully and role assigned" });
                 }
-                /*
+                
                 if (!await _roleManager.RoleExistsAsync(model.Role))
                     await _roleManager.CreateAsync(new IdentityRole(model.Role));
 
@@ -66,7 +68,7 @@ namespace PizzaApiAuth.Controllers
                 }
 
                 return Ok(new { message = "User registered successfully" });
-                */
+                
             }
 
             return BadRequest(result.Errors);
@@ -87,13 +89,16 @@ namespace PizzaApiAuth.Controllers
 
         private string GenerateJwtToken(ApplicationUser user)
         {
-            var claims = new[]
+            var userRoles = _userManager.GetRolesAsync(user).Result;
+
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                //novi dio 
-                new Claim(ClaimTypes.NameIdentifier, user.Id) // Dodavanje korisničkog ID-a kao claim
+                new Claim(ClaimTypes.NameIdentifier, user.Id)
             };
+
+            claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
